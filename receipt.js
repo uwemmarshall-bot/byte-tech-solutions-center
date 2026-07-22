@@ -169,6 +169,7 @@ export function printStudentReceipt(student, teacherName) {
         <tr><td class="label">Start Date</td><td>${student.startDate || "-"}</td></tr>
         <tr><td class="label">Stop Date</td><td>${student.stopDate || "-"}</td></tr>
         <tr><td class="label">Amount Paid</td><td>${money(student.amountPaid)}</td></tr>
+        <tr><td class="label">Description</td><td>${escapeHtml(student.description) || "-"}</td></tr>
     </table>
     <div class="footer-note">
         This receipt is computer generated and confirms the payment record on file
