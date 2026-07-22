@@ -26,6 +26,9 @@ export function printStudentReceipt(student, teacherName) {
     const share = Number(student.amountPaid || 0) / 3;
     const issued = new Date().toLocaleDateString();
     const receiptNo = "BTS-" + String(student.createdAt || Date.now()).slice(-6);
+    const durationLabel = student.durationMonths
+        ? student.durationMonths + " Month" + (Number(student.durationMonths) === 1 ? "" : "s")
+        : "-";
 
     // Resolve the logo relative to the page that opened this receipt,
     // since the pop-up window itself starts at "about:blank".
@@ -157,7 +160,11 @@ export function printStudentReceipt(student, teacherName) {
     </div>
     <table>
         <tr><td class="label">Student Name</td><td>${escapeHtml(student.name)}</td></tr>
+        <tr><td class="label">Sex</td><td>${escapeHtml(student.sex) || "-"}</td></tr>
+        <tr><td class="label">Email</td><td>${escapeHtml(student.email) || "-"}</td></tr>
+        <tr><td class="label">Address</td><td>${escapeHtml(student.address) || "-"}</td></tr>
         <tr><td class="label">Program</td><td>${escapeHtml(student.program) || "-"}</td></tr>
+        <tr><td class="label">Duration</td><td>${escapeHtml(durationLabel)}</td></tr>
         <tr><td class="label">Assigned Teacher</td><td>${escapeHtml(teacherName) || "-"}</td></tr>
         <tr><td class="label">Start Date</td><td>${student.startDate || "-"}</td></tr>
         <tr><td class="label">Stop Date</td><td>${student.stopDate || "-"}</td></tr>
