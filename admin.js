@@ -181,6 +181,9 @@ function openStudentModal(editId = null) {
     const addressInput = document.getElementById("studentAddress");
     const sexSelect = document.getElementById("studentSex");
     const durationInput = document.getElementById("studentDuration");
+    // Description is independent of the amount paid — just a free-text
+    // note about the student, saved to Firebase alongside their record.
+    const descriptionInput = document.getElementById("studentDescription");
 
     if (editId) {
         const s = students[editId];
@@ -195,6 +198,7 @@ function openStudentModal(editId = null) {
         if (addressInput) addressInput.value = s.address || "";
         if (sexSelect) sexSelect.value = s.sex || "";
         if (durationInput) durationInput.value = s.durationMonths || "";
+        if (descriptionInput) descriptionInput.value = s.description || "";
 
         title.textContent = "Edit Student";
         saveBtn.textContent = "Update Student";
@@ -210,6 +214,7 @@ function openStudentModal(editId = null) {
         if (addressInput) addressInput.value = "";
         if (sexSelect) sexSelect.selectedIndex = 0;
         if (durationInput) durationInput.value = "";
+        if (descriptionInput) descriptionInput.value = "";
 
         title.textContent = "Add Student";
         saveBtn.textContent = "Save Student";
@@ -587,11 +592,15 @@ document.getElementById("saveStudent").onclick = () => {
     const addressInput = document.getElementById("studentAddress");
     const sexSelect = document.getElementById("studentSex");
     const durationInput = document.getElementById("studentDuration");
+    // Description is a free-text note about the student — entirely
+    // independent of the payment/amount fields, just saved alongside them.
+    const descriptionInput = document.getElementById("studentDescription");
 
     const email = emailInput ? emailInput.value.trim() : "";
     const address = addressInput ? addressInput.value.trim() : "";
     const sex = sexSelect ? sexSelect.value : "";
     const durationMonths = durationInput ? Number(durationInput.value) : 0;
+    const description = descriptionInput ? descriptionInput.value.trim() : "";
 
     if (name === "" || program === "" || teacherId === "" || !amountPaid || amountPaid <= 0) {
         toast("Complete all required fields");
@@ -618,7 +627,8 @@ document.getElementById("saveStudent").onclick = () => {
         email,
         address,
         sex,
-        durationMonths
+        durationMonths,
+        description
     };
 
     if (editingStudentId) {
@@ -689,6 +699,7 @@ function renderStudents() {
 <td>${student.stopDate || "-"}</td>
 <td>${durationLabel}</td>
 <td>${money(student.amountPaid)}</td>
+<td>${escapeHtml(student.description) || "-"}</td>
 <td>${money(teacherShare)}</td>
 <td><a href="#" class="receipt-link printReceipt" data-id="${studentId}">Print Receipt</a></td>
 <td>
@@ -700,9 +711,9 @@ function renderStudents() {
     });
 
     if (activeIds.length === 0) {
-        studentTable.innerHTML = `<tr><td colspan="13" class="empty">No students available</td></tr>`;
+        studentTable.innerHTML = `<tr><td colspan="14" class="empty">No students available</td></tr>`;
     } else if (filteredIds.length === 0) {
-        studentTable.innerHTML = `<tr><td colspan="13" class="empty">No students match your search</td></tr>`;
+        studentTable.innerHTML = `<tr><td colspan="14" class="empty">No students match your search</td></tr>`;
     }
 
     studentCount.textContent = activeIds.length;
