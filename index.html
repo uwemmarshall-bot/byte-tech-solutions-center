@@ -244,6 +244,12 @@ class="search-box">
 
 <th>Name</th>
 
+<th>Sex</th>
+
+<th>Email</th>
+
+<th>Address</th>
+
 <th>Teacher</th>
 
 <th>Program</th>
@@ -251,6 +257,8 @@ class="search-box">
 <th>Start Date</th>
 
 <th>Stop Date</th>
+
+<th>Duration</th>
 
 <th>Amount Paid</th>
 
@@ -268,7 +276,7 @@ class="search-box">
 
 <tr>
 
-<td colspan="9" class="empty">
+<td colspan="13" class="empty">
 
 No students available
 
@@ -448,6 +456,41 @@ No students available
 
             <div class="form-group">
 
+                <label>Email</label>
+
+                <input
+                    type="email"
+                    id="studentEmail"
+                    placeholder="student@example.com">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Address</label>
+
+                <textarea
+                    id="studentAddress"
+                    placeholder="Home address"></textarea>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Sex</label>
+
+                <select id="studentSex">
+
+                    <option value="">Select Sex</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
                 <label>Program</label>
 
                 <select id="studentProgram">
@@ -457,6 +500,18 @@ No students available
                     <option value="ICT Training (Certificate)">ICT Training (Certificate)</option>
 
                 </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Duration (Months)</label>
+
+                <input
+                    type="number"
+                    id="studentDuration"
+                    min="1"
+                    placeholder="e.g. 3">
 
             </div>
 
@@ -555,7 +610,7 @@ No students available
 
         <div class="modal-body">
 
-            <p class="hint-text">Payments require the teacher's acknowledgement on their dashboard before the amount reflects in totals.</p>
+            <p class="hint-text">Payments require the teacher's acknowledgement on their dashboard before the amount reflects in totals. Every entry is added to the teacher's balance.</p>
 
             <div class="form-group">
 
@@ -568,19 +623,6 @@ No students available
                         Select Teacher
 
                     </option>
-
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Entry Type</label>
-
-                <select id="paymentType">
-
-                    <option value="add">Payment (Add to Balance)</option>
-                    <option value="deduct">Deduction (Subtract from Balance)</option>
 
                 </select>
 
