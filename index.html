@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Byte Tech Solutions</title>
+<title>Lesson Payment Management</title>
 
 <!-- Browser Icon (Favicon) -->
 <link rel="icon" type="image/png" href="logo.png">
@@ -262,6 +262,8 @@ class="search-box">
 
 <th>Amount Paid</th>
 
+<th>Description</th>
+
 <th>Teacher Share</th>
 
 <th>Receipt</th>
@@ -276,7 +278,7 @@ class="search-box">
 
 <tr>
 
-<td colspan="13" class="empty">
+<td colspan="14" class="empty">
 
 No students available
 
@@ -543,6 +545,16 @@ No students available
                     type="number"
                     id="amountPaid"
                     placeholder="0">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Description (Optional)</label>
+
+                <textarea
+                    id="studentDescription"
+                    placeholder="Any additional notes about the student"></textarea>
 
             </div>
 
