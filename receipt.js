@@ -35,43 +35,7 @@ export function printStudentReceipt(student, teacherName) {
     const baseHref = window.location.href.substring(0, window.location.href.lastIndexOf("/") + 1);
     const logoSrc = baseHref + "logo.jpg";
 
-    const html = `
-//==================================================
-// Lesson Payment Management System
-// Shared Receipt Printing Module
-//==================================================
 
-export const INSTITUTE_NAME = "Byte Tech Solutions";
-export const INSTITUTE_TAGLINE = "Center for CBT Assessment & ICT Training with Certificates";
-
-function money(value) {
-    return "₦" + Number(value || 0).toLocaleString();
-}
-
-function escapeHtml(value) {
-    const div = document.createElement("div");
-    div.textContent = value ?? "";
-    return div.innerHTML;
-}
-
-//==================================================
-// BUILD + OPEN A PRINTABLE RECEIPT FOR A STUDENT
-//==================================================
-
-export function printStudentReceipt(student, teacherName) {
-    if (!student) return;
-
-    const share = Number(student.amountPaid || 0) / 3;
-    const issued = new Date().toLocaleDateString();
-    const receiptNo = "BTS-" + String(student.createdAt || Date.now()).slice(-6);
-    const durationLabel = student.durationMonths
-        ? student.durationMonths + " Month" + (Number(student.durationMonths) === 1 ? "" : "s")
-        : "-";
-
-    // Resolve the logo relative to the page that opened this receipt,
-    // since the pop-up window itself starts at "about:blank".
-    const baseHref = window.location.href.substring(0, window.location.href.lastIndexOf("/") + 1);
-    const logoSrc = baseHref + "logo.jpg";
 
     const html = `
 <!DOCTYPE html>
