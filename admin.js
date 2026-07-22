@@ -176,6 +176,12 @@ function openStudentModal(editId = null) {
     const saveBtn = document.getElementById("saveStudent");
     const programSelect = document.getElementById("studentProgram");
 
+    // New registration fields
+    const emailInput = document.getElementById("studentEmail");
+    const addressInput = document.getElementById("studentAddress");
+    const sexSelect = document.getElementById("studentSex");
+    const durationInput = document.getElementById("studentDuration");
+
     if (editId) {
         const s = students[editId];
         document.getElementById("studentName").value = s.name || "";
@@ -184,6 +190,12 @@ function openStudentModal(editId = null) {
         document.getElementById("stopDate").value = s.stopDate || "";
         document.getElementById("amountPaid").value = s.amountPaid || "";
         teacherSelect.value = s.teacherId || "";
+
+        if (emailInput) emailInput.value = s.email || "";
+        if (addressInput) addressInput.value = s.address || "";
+        if (sexSelect) sexSelect.value = s.sex || "";
+        if (durationInput) durationInput.value = s.durationMonths || "";
+
         title.textContent = "Edit Student";
         saveBtn.textContent = "Update Student";
     } else {
@@ -193,6 +205,12 @@ function openStudentModal(editId = null) {
         document.getElementById("stopDate").value = "";
         document.getElementById("amountPaid").value = "";
         teacherSelect.selectedIndex = 0;
+
+        if (emailInput) emailInput.value = "";
+        if (addressInput) addressInput.value = "";
+        if (sexSelect) sexSelect.selectedIndex = 0;
+        if (durationInput) durationInput.value = "";
+
         title.textContent = "Add Student";
         saveBtn.textContent = "Save Student";
     }
@@ -564,30 +582,52 @@ document.getElementById("saveStudent").onclick = () => {
     const amountPaid = Number(document.getElementById("amountPaid").value);
     const teacherId = teacherSelect.value;
 
+    // New registration fields
+    const emailInput = document.getElementById("studentEmail");
+    const addressInput = document.getElementById("studentAddress");
+    const sexSelect = document.getElementById("studentSex");
+    const durationInput = document.getElementById("studentDuration");
+
+    const email = emailInput ? emailInput.value.trim() : "";
+    const address = addressInput ? addressInput.value.trim() : "";
+    const sex = sexSelect ? sexSelect.value : "";
+    const durationMonths = durationInput ? Number(durationInput.value) : 0;
+
     if (name === "" || program === "" || teacherId === "" || !amountPaid || amountPaid <= 0) {
         toast("Complete all required fields");
         return;
     }
 
+    if (sexSelect && sex === "") {
+        toast("Select the student's sex");
+        return;
+    }
+
+    if (durationInput && (!durationMonths || durationMonths <= 0)) {
+        toast("Enter a valid duration in months");
+        return;
+    }
+
+    const studentData = {
+        name,
+        program,
+        startDate,
+        stopDate,
+        amountPaid,
+        teacherId,
+        email,
+        address,
+        sex,
+        durationMonths
+    };
+
     if (editingStudentId) {
-        update(ref(db, "lessonPayment/students/" + editingStudentId), {
-            name,
-            program,
-            startDate,
-            stopDate,
-            amountPaid,
-            teacherId
-        });
+        update(ref(db, "lessonPayment/students/" + editingStudentId), studentData);
         toast("Student updated successfully");
     } else {
         const studentId = push(studentsRef).key;
         set(ref(db, "lessonPayment/students/" + studentId), {
-            name,
-            program,
-            startDate,
-            stopDate,
-            amountPaid,
-            teacherId,
+            ...studentData,
             isDeleted: false,
             createdAt: Date.now()
         });
@@ -633,14 +673,21 @@ function renderStudents() {
         const student = students[studentId];
         const teacherNameForRow = teachers[student.teacherId]?.name || "Unknown";
         const teacherShare = Number(student.amountPaid || 0) / 3;
+        const durationLabel = student.durationMonths
+            ? student.durationMonths + " mo"
+            : "-";
 
         studentTable.innerHTML += `
 <tr>
 <td>${escapeHtml(student.name)}</td>
+<td>${escapeHtml(student.sex) || "-"}</td>
+<td>${escapeHtml(student.email) || "-"}</td>
+<td>${escapeHtml(student.address) || "-"}</td>
 <td>${escapeHtml(teacherNameForRow)}</td>
 <td><span class="program-tag">${escapeHtml(student.program) || "-"}</span></td>
 <td>${student.startDate || "-"}</td>
 <td>${student.stopDate || "-"}</td>
+<td>${durationLabel}</td>
 <td>${money(student.amountPaid)}</td>
 <td>${money(teacherShare)}</td>
 <td><a href="#" class="receipt-link printReceipt" data-id="${studentId}">Print Receipt</a></td>
@@ -653,9 +700,9 @@ function renderStudents() {
     });
 
     if (activeIds.length === 0) {
-        studentTable.innerHTML = `<tr><td colspan="9" class="empty">No students available</td></tr>`;
+        studentTable.innerHTML = `<tr><td colspan="13" class="empty">No students available</td></tr>`;
     } else if (filteredIds.length === 0) {
-        studentTable.innerHTML = `<tr><td colspan="9" class="empty">No students match your search</td></tr>`;
+        studentTable.innerHTML = `<tr><td colspan="13" class="empty">No students match your search</td></tr>`;
     }
 
     studentCount.textContent = activeIds.length;
@@ -727,11 +774,12 @@ studentSearch.addEventListener("input", () => {
 // RECORD TEACHER PAYMENT
 // New payments start as "pending" and only count toward
 // totals once the teacher acknowledges them on their dashboard.
+// Every new payment is always an ADDITION to the teacher's
+// balance — the "deduct" option has been removed.
 //==================================================
 
 document.getElementById("savePayment").onclick = () => {
     const teacherId = paymentTeacher.value;
-    const type = document.getElementById("paymentType").value || "add";
     const amount = Number(document.getElementById("paymentAmount").value);
     const date = document.getElementById("paymentDate").value;
     const remark = document.getElementById("paymentRemark").value.trim();
@@ -747,7 +795,7 @@ document.getElementById("savePayment").onclick = () => {
         ref(db, "lessonPayment/teacherPayments/" + teacherId + "/" + paymentId),
         {
             amount,
-            type,
+            type: "add",
             date,
             remark,
             status: "pending",
@@ -759,7 +807,6 @@ document.getElementById("savePayment").onclick = () => {
     document.getElementById("paymentAmount").value = "";
     document.getElementById("paymentDate").value = "";
     document.getElementById("paymentRemark").value = "";
-    document.getElementById("paymentType").selectedIndex = 0;
     paymentTeacher.selectedIndex = 0;
 
     toast("Payment entry recorded — awaiting teacher acknowledgement");
@@ -776,10 +823,12 @@ onValue(paymentsRef, (snapshot) => {
     calculateTotals();
 });
 
-// Sums only ACKNOWLEDGED payments for one teacher, signed by entry type.
+// Sums only ACKNOWLEDGED payments for one teacher.
 // Legacy records saved before this feature existed have no `status` or
 // `type` field — treat those as already-acknowledged additions so
-// historical totals don't change.
+// historical totals don't change. Any old "deduct" records still on
+// file continue to subtract, for accurate historical accounting, but
+// no new deduct entries can be created going forward.
 function acknowledgedReceivedForTeacher(teacherId) {
     let received = 0;
     const teacherPayments = payments[teacherId] || {};
